@@ -10,11 +10,6 @@ import life.dashyeah.Notebook.*;
 
 public class Notebook {
 	private Pack pack = new Pack();
-	private static Boolean flag;
-	
-	private Notebook(){flag=true;}
-	protected void finalize(){flag=false;}
-	public static Notebook getNotebook(){return flag? null: new Notebook();}
 	
 	private static void showHello(){
 		System.out.println(" +++ Welcome to Dash Note! +++ ");
@@ -54,31 +49,32 @@ public class Notebook {
 		Iterator<Record> it = all.iterator();
 		while(it.hasNext()){
 			Record r = it.next();
-			System.out.format("#%d: %s",r.getNo(),r.getText());
+			System.out.format("#%d: \n%s",r.getNo(),r.getText());
 		}
+		System.out.println("");
 	}
 	private void newRecord(){
 		StringBuilder s = new StringBuilder();
-		System.out.print("Input text now. enter \"\\exit\" in a new line to finish.");
+		System.out.print("Input text now. enter \"\\exit\" in a new line to finish.\n");
 		String tmp = "";
 		@SuppressWarnings("resource")
 		Scanner scan = new Scanner(System.in);
-		while(!tmp.equals("\\exit")){
+		while(true){
 			System.out.print("Input>");
 			tmp = scan.nextLine();
-			s.append(tmp);
+			if(tmp.equals("\\exit")) break;
+			s.append(tmp+"\n");
 		}
 		this.pack.addRecord(s.toString());
 	}
 	private void searchRecord(){
 		String s;
 		int sel;
-		System.out.println("SN> ");
 		@SuppressWarnings("resource")
 		Scanner scan = new Scanner(System.in);
 		while(true){
 			try{
-				System.out.print("choice> ");
+				System.out.print("SN> ");
 				sel = scan.nextInt();
 			}catch(InputMismatchException e){
 				scan.next();
@@ -97,12 +93,11 @@ public class Notebook {
 	}
 	private void daleteRecord(){
 		int sel;
-		System.out.println("SN> ");
 		@SuppressWarnings("resource")
 		Scanner scan = new Scanner(System.in);
 		while(true){
 			try{
-				System.out.print("choice> ");
+				System.out.print("SN> ");
 				sel = scan.nextInt();
 			}catch(InputMismatchException e){
 				scan.next();
@@ -111,14 +106,18 @@ public class Notebook {
 			}
 			break;
 		}
-		
+		this.pack.removeRecord(sel);
+		System.out.println("OK!");
+	}
+	private void clear(){
+		this.pack.removeRecords();
 	}
 	
 	public static void main(String args[]){
-		Notebook nb = Notebook.getNotebook();
+		Notebook nb = new Notebook();
+		showHello();
 		while(true){
 			int sel;
-			showHello();
 			sel = showMenu();
 			switch(sel){
 			case 1:
@@ -131,8 +130,10 @@ public class Notebook {
 				nb.searchRecord();
 				break;
 			case 4:
+				nb.daleteRecord();
 				break;
 			case 5:
+				nb.clear();
 				break;
 			case 0:
 			default:
